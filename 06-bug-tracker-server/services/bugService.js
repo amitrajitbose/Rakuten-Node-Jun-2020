@@ -1,15 +1,14 @@
 const fs = require('fs'),
-    path = require('path')
+    path = require('path'),
+    bugDb = require('./bugDb')
 
 const dbFile = path.join(__dirname, '..', '/db/data.json');
 
 //the following line has to be removed
-let bugList = [];
+let bugList = bugDb.getBugs();
 
 function getAll(){
     //replace the following code with the 'async' alternative
-    const rawData = fs.readFileSync(dbFile),
-        bugList = JSON.parse(rawData);
     return bugList;
 }
 
@@ -19,13 +18,11 @@ function getById(bugId) {
 
 function save(bugData){
     //read from the file
-    const rawData = fs.readFileSync(dbFile),
-        bugList = JSON.parse(rawData);
     const newBugId = bugData.id !== 0 ? bugData.id : bugList.reduce((result, bug) => result > bug.id ? result : bug.id) + 1;
         newBug = { ...bugData, id: newBugId };
     bugList.push(newBug);
     //write into the file
-    fs.writeFileSync(dbFile, JSON.stringify(bugList));
+    bugDb.setBugs(bugList);
     return newBug;
 }
 
@@ -35,6 +32,7 @@ function update(bugId, updatedBug){
         return null;
     }
     bugList = bugList.map(existingBug => existingBug.id === bugId ? updatedBug : existingBug);
+    bugDb.setBugs(bugList);
     return updatedBug;
 }
 
@@ -44,6 +42,7 @@ function remove(bugId){
         return null;
     }
     bugList = bugList.filter(existingBug => existingBug.id !== bugId);
+    bugDb.setBugs(bugList);
     return {};
 }
 
