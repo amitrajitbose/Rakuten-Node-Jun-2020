@@ -5,7 +5,7 @@ const express = require('express'),
 
 //effective route path -> /bugs/
 router.get('/', (req,res, next) => {
-    res.json(bugService.getAll());
+    res.json(bugService.getAll().resolve());
 });
 
 // /bugs/1, /bugs/2
